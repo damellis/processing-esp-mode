@@ -1,4 +1,4 @@
-package processing.mode.p5js;
+package processing.mode.esp;
 
 import java.awt.Desktop;
 import java.awt.EventQueue;
@@ -31,21 +31,16 @@ import processing.app.ui.EditorToolbar;
 import processing.app.ui.Toolkit;
 import processing.mode.java.AutoFormat;
 import processing.mode.java.JavaInputHandler;
-import processing.mode.p5js.server.HttpServer;
 
 
-public class p5jsEditor extends Editor {
+public class ESPEditor extends Editor {
   HttpServer server;
   boolean showSizeWarning = true;
 
 
-  protected p5jsEditor(Base base, String path,
+  protected ESPEditor(Base base, String path,
                        EditorState state, Mode mode) throws EditorException {
     super(base, path, state, mode);
-
-    if (sketch.isUntitled()) {
-      rebuildHtml();
-    }
   }
 
 
@@ -61,12 +56,12 @@ public class p5jsEditor extends Editor {
    *  implements abstract Editor.createToolbar(),
    *  called in Editor constructor to add the toolbar to the window.
    *
-   *  @return an EditorToolbar, in our case a JavaScriptToolbar
-   *  @see processing.mode.p5js.p5jsToolbar
+   *  @return an EditorToolbar, in our case an ESPToolbar
+   *  @see processing.mode.esp.ESPToolbar
    */
   @Override
   public EditorToolbar createToolbar() {
-    return new p5jsToolbar(this);
+    return new ESPToolbar(this);
   }
 
 
@@ -150,11 +145,11 @@ public class p5jsEditor extends Editor {
     JMenu menu = new JMenu("Help");
     JMenuItem item;
 
-    item = new JMenuItem("Getting Started");
+    item = new JMenuItem("About");
     item.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        Platform.openURL("http://p5js.org/get-started/#your-first-sketch");
+        Platform.openURL("https://github.com/damellis/ESP/wiki");
       }
     });
     menu.add(item);
@@ -163,46 +158,16 @@ public class p5jsEditor extends Editor {
     item.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        Platform.openURL("http://p5js.org/reference/");
+        Platform.openURL("http://damellis.github.io/ESP/");
       }
     });
     menu.add(item);
 
-    item = Toolkit.newJMenuItemShift("Find in Reference", 'F');
+    item = new JMenuItem("View ESP on Github");
     item.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        //handleFindReferenceImpl();
-        handleFindReference();
-      }
-    });
-    menu.add(item);
-
-    menu.addSeparator();
-
-    item = new JMenuItem("Visit p5js.org");
-    item.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        Platform.openURL("http://p5js.org/");
-      }
-    });
-    menu.add(item);
-
-    item = new JMenuItem("Visit the Forum");
-    item.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        Platform.openURL("https://forum.processing.org/");
-      }
-    });
-    menu.add(item);
-
-    item = new JMenuItem("View p5js on Github");
-    item.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        Platform.openURL("https://github.com/processing/p5.js");
+        Platform.openURL("https://github.com/damellis/ESP");
       }
     });
     menu.add(item);
@@ -218,17 +183,6 @@ public class p5jsEditor extends Editor {
   @Override
   public String getCommentPrefix() {
     return "//";
-  }
-
-
-  /**
-   * The EditorHeader is rebuilt when tabs are renamed, added, or removed.
-   * Use this as a callback to rewrite the HTML file from the template.
-   */
-  @Override
-  public void rebuildHeader() {
-    super.rebuildHeader();
-    rebuildHtml();
   }
 
 
@@ -273,8 +227,8 @@ public class p5jsEditor extends Editor {
       // Make sure the sketch folder still exists, and the SketchCode objects
       // are updated to include any text changes from the Editor.
       prepareRun();
-      // write the HTML here in case we need temp files
-      p5jsBuild.updateHtml(sketch);
+//      // write the HTML here in case we need temp files
+//      p5jsBuild.updateHtml(sketch);
     } catch (Exception e) {
       statusError(e);
     }
@@ -282,17 +236,17 @@ public class p5jsEditor extends Editor {
       toolbar.deactivateRun();
 
     } else {
-      if (server == null || server.isDead()) {
-        restartServer();
-      }
-      statusNotice("Server running at " + server.getAddress());
-      //Platform.openURL(server.getAddress());
-
-      try {
-        Desktop.getDesktop().browse(new URI(server.getAddress()));
-      } catch (Exception e) {
-        statusError(e);
-      }
+//      if (server == null || server.isDead()) {
+//        restartServer();
+//      }
+//      statusNotice("Server running at " + server.getAddress());
+//      //Platform.openURL(server.getAddress());
+//
+//      try {
+//        Desktop.getDesktop().browse(new URI(server.getAddress()));
+//      } catch (Exception e) {
+//        statusError(e);
+//      }
     }
   }
 
@@ -302,25 +256,20 @@ public class p5jsEditor extends Editor {
    */
   public void handleStop() {
     try {
-      p5jsBuild.cleanTempFiles(sketch);
+//      p5jsBuild.cleanTempFiles(sketch);
     } catch (IOException e) {
       e.printStackTrace();  // TODO ignore?
     }
-    stopServer();
-    statusNotice("Server stopped.");
+//    stopServer();
+    statusNotice("Example stopped.");
     toolbar.deactivateRun();
   }
 
 
   //public boolean handleExport(boolean openFolder) {
   protected boolean checkErrors(boolean fatal) {
-    //return mode.handleExport(sketch);
-//    long t = System.currentTimeMillis();
     try {
-      new p5jsBuild(sketch);
-//      new p5jsBuildFX(this, sketch);
-//      System.out.println("elapsed: " + (System.currentTimeMillis() - t));
-//      return true;
+//      new p5jsBuild(sketch);
     } catch (SketchException se) {
       if (fatal) {
         statusError(se);
@@ -370,17 +319,6 @@ public class p5jsEditor extends Editor {
   }
 
 
-  protected boolean rebuildHtml() {
-    try {
-      p5jsBuild.updateHtml(sketch);
-      return true;
-    } catch (Exception e) {
-      statusError(e);
-    }
-    return false;
-  }
-
-
   @Override
   public boolean handleSaveAs() {
     if (super.handleSaveAs()) {
@@ -392,39 +330,11 @@ public class p5jsEditor extends Editor {
               Thread.sleep(5);
             } catch (InterruptedException e) { }
           }
-          rebuildHtml();
         }
       });
       return true;  // kind of a farce
     }
     return false;
-  }
-
-
-  /**
-   * Start the internal server for this sketch.
-   * @param root the root folder for the server to serve from
-   * @return true if it was started anew, false if it was running
-   */
-  protected void restartServer() {
-    if (server != null && server.isDead()) {
-      // if server hung or something else went wrong .. stop it.
-      server.stop();
-      server = null;
-    }
-
-    if (server == null) {
-      server = new HttpServer(this);
-    }
-
-    server.start();
-  }
-
-
-  protected void stopServer() {
-    if (server != null) {
-      server.stop();
-    }
   }
 
 

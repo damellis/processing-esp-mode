@@ -1,13 +1,13 @@
-package processing.mode.p5js;
+package processing.mode.esp;
 
 import java.io.File;
 
 import processing.app.Library;
 
 
-public class p5jsLibrary extends Library {
+public class ESPLibrary extends Library {
 
-  public p5jsLibrary(File folder) {
+  public ESPLibrary(File folder) {
     super(folder);
   }
 

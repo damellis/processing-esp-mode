@@ -1,0 +1,165 @@
+package processing.mode.esp;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import processing.app.*;
+import processing.app.syntax.TokenMarker;
+import processing.app.ui.*;
+import processing.core.PApplet;
+
+
+public class ESPMode extends Mode {
+  private ESPEditor espEditor;
+
+
+  public ESPMode (Base base, File folder) {
+    super(base, folder);
+  }
+
+
+  /**
+   *  Called to create the actual editor when needed (once per Sketch)
+   */
+  @Override
+  public Editor createEditor(Base base, String path,
+                             EditorState state) throws EditorException {
+    espEditor = new ESPEditor(base, path, state, this);
+    return espEditor;
+  }
+
+
+  /**
+   *  Called from Base to get the Editor for this mode.
+   */
+  public Editor getEditor() {
+    return espEditor;
+  }
+
+
+  /*
+  public JavaMode getJavaMode() {
+    if (defaultJavaMode == null) {
+      for (Mode m : base.getModeList() ) {
+        if (m.getClass() == JavaMode.class) {
+          defaultJavaMode = (JavaMode) m;
+          break;
+        }
+      }
+    }
+    return defaultJavaMode;
+  }
+  */
+
+
+  @Override
+  public File[] getKeywordFiles() {
+    return new File[] {
+      //Platform.getContentFile("modes/java/keywords.txt"),
+      new File(folder, "keywords.txt")
+    };
+  }
+
+
+  @Override
+  public TokenMarker getTokenMarker(SketchCode code) {
+    String ext = code.getExtension();
+
+    if (ext.equals("cpp") || ext.equals("h")) {
+      return new CCTokenMarker();
+    } else if (ext.equals("c")) {
+      return new CTokenMarker();
+    }
+    
+    return null;  // no styling
+  }
+
+
+  /**
+   *  Return pretty title of this mode for menu listing and such
+   */
+  @Override
+  public String getTitle() {
+    return "ESP";
+  }
+
+
+  // public EditorToolbar createToolbar(Editor editor) { }
+
+
+  // public Formatter createFormatter() { }
+
+
+  // public Editor createEditor(Base ibase, String path, int[] location) { }
+
+
+  /**
+   *  Get a list of folders that contain examples, ordered by the way they
+   *  should show up in the window or menu.
+   */
+  @Override
+  public File[] getExampleCategoryFolders() {
+    final String[] titles = {
+      "ESP",
+    };
+
+    File[] outgoing = new File[titles.length];
+    for (int i = 0; i < titles.length; i++) {
+      outgoing[i] = new File(examplesFolder, titles[i]);
+    }
+    return outgoing;
+  }
+
+
+  @Override
+  public void rebuildLibraryList() {
+    //super.rebuildLibraryList();
+
+    coreLibraries = new ArrayList<>();
+//    Library domLibrary =
+//      new p5jsLibrary(new File(getLibrariesFolder(), "p5.dom"));
+//    coreLibraries.add(domLibrary);
+//    Library soundLibrary =
+//      new p5jsLibrary(new File(getLibrariesFolder(), "p5.sound"));
+//    coreLibraries.add(soundLibrary);
+
+    // no contribs for now, figure this out later
+    contribLibraries = new ArrayList<>();
+  }
+
+
+  @Override
+  public boolean requireExampleCompatibility() {
+    return true;
+  }
+
+
+  /**
+   * Return the default extension for this mode.
+   */
+  @Override
+  public String getDefaultExtension() {
+    return "cpp";
+  }
+
+
+  /**
+   * The list of extensions that should show up as tabs.
+   */
+  @Override
+  public String[] getExtensions () {
+    return new String[] { "cpp", "c", "h" };
+  }
+
+
+  /**
+   * Return list of file and folder names that should be ignored on Save As.
+   * Starting in Processing 3.2, this can return null (otherwise it should be
+   * a zero length String array if there's nothing to ignore).
+   */
+  @Override
+  public String[] getIgnorable() {
+    return null;
+  }
+}

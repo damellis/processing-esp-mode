@@ -1,4 +1,4 @@
-package processing.mode.p5js;
+package processing.mode.esp;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,11 +10,11 @@ import processing.app.ui.*;
 import processing.core.PApplet;
 
 
-public class p5jsMode extends Mode {
-  private p5jsEditor jsEditor;
+public class ESPMode extends Mode {
+  private ESPEditor espEditor;
 
 
-  public p5jsMode (Base base, File folder) {
+  public ESPMode (Base base, File folder) {
     super(base, folder);
   }
 
@@ -25,8 +25,8 @@ public class p5jsMode extends Mode {
   @Override
   public Editor createEditor(Base base, String path,
                              EditorState state) throws EditorException {
-    jsEditor = new p5jsEditor(base, path, state, this);
-    return jsEditor;
+    espEditor = new ESPEditor(base, path, state, this);
+    return espEditor;
   }
 
 
@@ -34,7 +34,7 @@ public class p5jsMode extends Mode {
    *  Called from Base to get the Editor for this mode.
    */
   public Editor getEditor() {
-    return jsEditor;
+    return espEditor;
   }
 
 
@@ -56,7 +56,7 @@ public class p5jsMode extends Mode {
   @Override
   public File[] getKeywordFiles() {
     return new File[] {
-      Platform.getContentFile("modes/java/keywords.txt"),
+      //Platform.getContentFile("modes/java/keywords.txt"),
       new File(folder, "keywords.txt")
     };
   }

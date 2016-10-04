@@ -1,4 +1,4 @@
-package processing.mode.p5js;
+package processing.mode.esp;
 
 import java.awt.event.MouseEvent;
 
@@ -8,7 +8,7 @@ import processing.app.ui.Editor;
 import processing.app.ui.EditorToolbar;
 
 
-public class p5jsToolbar extends EditorToolbar {
+public class ESPToolbar extends EditorToolbar {
   static protected final int RUN    = 0;
   static protected final int STOP   = 1;
 
@@ -18,7 +18,7 @@ public class p5jsToolbar extends EditorToolbar {
   static protected final int EXPORT = 5;
 
 
-  public p5jsToolbar(Editor editor) {
+  public ESPToolbar(Editor editor) {
     super(editor);
   }
 
@@ -28,15 +28,15 @@ public class p5jsToolbar extends EditorToolbar {
 
   @Override
   public void handleRun(int modifiers) {
-    p5jsEditor jsEditor = (p5jsEditor) editor;
-    jsEditor.handleRun();
+    ESPEditor espEditor = (ESPEditor) editor;
+    espEditor.handleRun();
   }
 
 
   @Override
   public void handleStop() {
-    p5jsEditor jsEditor = (p5jsEditor) editor;
-    jsEditor.handleStop();
+    ESPEditor espEditor = (ESPEditor) editor;
+    espEditor.handleStop();
   }
 
 
@@ -75,12 +75,12 @@ public class p5jsToolbar extends EditorToolbar {
 
   static public String getTitle (int index, boolean shift) {
     switch (index) {
-    case RUN:    return "Start server";
-    case STOP:   return "Stop server";
+    case RUN:    return "Start";
+    case STOP:   return "Stop";
     case NEW:    return "New";
     case OPEN:   return "Open";
     case SAVE:   return "Save";
-    case EXPORT: return "Export for Web";
+    case EXPORT: return "Export";
     }
     return null;
   }

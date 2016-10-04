@@ -1,4 +1,4 @@
-<project name="p5js-mode" default="install">
+<project name="esp-mode" default="install">
 
   <property file="local.properties" />
 
@@ -15,7 +15,7 @@ ${line.separator}with the path to where you have the code for processing checked
 ${line.separator}and another line that reads:
 ${line.separator}sketchbook.dir=/path/to/your/sketchbook" />
 
-  <property name="me" value="p5jsMode" />
+  <property name="me" value="ESPMode" />
   
   <property name="install.dir" 
             value="${sketchbook.dir}/modes/${me}" />
@@ -100,12 +100,9 @@ ${line.separator}sketchbook.dir=/path/to/your/sketchbook" />
 
   <target name="examples" depends="build">
     <delete dir="examples" />
-    <java classname="processing.mode.p5js.build.ImportExamples" 
-	  classpath="bin;
-		     ${processing.dir}/core/bin;
-		     ${processing.dir}/app/bin;
-		     ${processing.dir}/app/lib/jna.jar;
-		     ${processing.dir}/app/lib/jna-platform.jar" />
+    <copy todir="examples/ESP">
+      <fileset dir="${esp.dir}/Xcode/ESP/src/examples" />
+    </copy>
   </target>
 
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
