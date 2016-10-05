@@ -8,6 +8,14 @@ local.properties
 *master.zip
 /examples/
 
+# openFramework .zip
+of_*.zip
+
+# ESP and dependencies
+core/include/*
+core/library/*
+core/Resources/*
+
 # the dist files
-p5jsMode.zip
-p5jsMode.txt
+ESPMode.zip
+ESPMode.txt

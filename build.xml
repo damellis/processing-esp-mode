@@ -13,7 +13,9 @@ ${line.separator}and write a line that reads:
 ${line.separator}processing.dir=/path/to/processing-git
 ${line.separator}with the path to where you have the code for processing checked out
 ${line.separator}and another line that reads:
-${line.separator}sketchbook.dir=/path/to/your/sketchbook" />
+${line.separator}sketchbook.dir=/path/to/your/sketchbook
+${line.separator}and another line that reads:
+${line.separator}esp.dir=/path/to/esp-git" />
 
   <property name="me" value="ESPMode" />
   
@@ -25,11 +27,82 @@ ${line.separator}sketchbook.dir=/path/to/your/sketchbook" />
 
   <property name="dist.path"
             value="${me}.zip" />
+  
+  <property name="ofVersion" value="v0.9.3" />
+  <property name="ofFile" value="of_v0.9.3_osx_release" />
+  
+  <condition property="ofZipFile.present">
+    <available file="${ofFile}.zip" />
+  </condition>
+
+  <condition property="of.present">
+    <available file="core/library/openFrameworks" />
+  </condition>
 
 
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-  <target name="build">
+  <target name="download.of" unless="ofZipFile.present">
+    <get src="http://openframeworks.cc/versions/${ofVersion}/${ofZipFile}"
+         dest="${ofFile}.zip" verbose="on" />
+  </target>
+
+  <target name="install.of" depends="download.of" unless="of.present">
+    <unzip src="${ofFile}.zip" dest="core/library" />
+    <move file="core/library/${ofFile}" tofile="core/library/openFrameworks" />
+  </target>
+  
+  <target name="install.libs">
+    <copy file="${esp.dir}/Xcode/ESP/bin/libesp.a" todir="core/library" />
+    <copy file="${esp.dir}/Xcode/ESP/libgrt.dylib" todir="core/library" />
+  </target>
+  
+  <target name="install.includes">
+    <copy todir="core/include/ESP">
+      <fileset dir="${esp.dir}/Xcode/ESP/src">
+        <include name="**/*.h" />
+      </fileset>
+    </copy>
+    <copy todir="core/include/GRT">
+      <fileset dir="${esp.dir}/third-party/grt/GRT">
+        <include name="**/*.h" />
+      </fileset>
+    </copy>
+    <copy todir="core/include/ofxDatGui">
+      <fileset dir="${esp.dir}/third-party/ofxDatGui/src">
+        <include name="**/*.h" />
+      </fileset>
+    </copy>
+    <copy todir="core/include/ofxGrt">
+      <fileset dir="${esp.dir}/third-party/ofxGrt/src">
+        <include name="**/*.h" />
+      </fileset>
+    </copy>
+    <copy todir="core/include/ofxParagraph">
+      <fileset dir="${esp.dir}/third-party/ofxParagraph/src">
+        <include name="**/*.h" />
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="install.data">
+    <copy todir="core/Resources">
+      <fileset file="${esp.dir}/Xcode/ESP/bin/data" />
+    </copy>
+  </target>
+  
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+  <target name="examples">
+    <delete dir="examples" />
+    <copy todir="examples/ESP">
+      <fileset dir="${esp.dir}/Xcode/ESP/src/examples" />
+    </copy>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+  <target name="build" depends="install.of,install.libs,install.includes,install.data,examples">
 
     <!-- Locate the JDT compiler, since we know processing.dir must exist and
          using the JDT allows us to build the PDE with only a JRE on Windows
@@ -71,8 +144,9 @@ ${line.separator}sketchbook.dir=/path/to/your/sketchbook" />
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   
   <target name="install" depends="build">
-    <available file="examples" property="examples.exist" />
-    <fail unless="examples.exist" message="First run the 'ant examples' target to get the examples folder ready." />
+    <copy todir="${install.dir}/core">
+      <fileset dir="core" />
+    </copy>
 
     <copy todir="${install.dir}/examples">
       <fileset dir="examples" />
@@ -98,15 +172,6 @@ ${line.separator}sketchbook.dir=/path/to/your/sketchbook" />
 
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
-  <target name="examples" depends="build">
-    <delete dir="examples" />
-    <copy todir="examples/ESP">
-      <fileset dir="${esp.dir}/Xcode/ESP/src/examples" />
-    </copy>
-  </target>
-
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
   <target name="clean">
     <delete dir="${install.dir}" />
     <delete dir="bin" />
@@ -115,6 +180,9 @@ ${line.separator}sketchbook.dir=/path/to/your/sketchbook" />
     <delete file="${me}.zip" />
     <delete file="${me}.txt" />
     <delete dir="examples" />
+    <delete dir="core/include" />
+    <delete dir="core/library" />
+    <delete dir="core/Resources" />
   </target>
 
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -122,12 +190,13 @@ ${line.separator}sketchbook.dir=/path/to/your/sketchbook" />
   <target name="dist" depends="build">
     <zip destfile="${dist.path}">
       <!-- This can probably be done more efficiently, no? How about a PR? -->
-      <zipfileset dir="." prefix="p5jsMode" includes="examples/**" />
-      <zipfileset dir="." prefix="p5jsMode" includes="keywords.txt" />
-      <zipfileset dir="." prefix="p5jsMode" includes="libraries/**" />
-      <zipfileset dir="." prefix="p5jsMode" includes="mode/**" />
-      <zipfileset dir="." prefix="p5jsMode" includes="mode.properties" />
-      <zipfileset dir="." prefix="p5jsMode" includes="template/**" />
+      <zipfileset dir="." prefix="ESPMode" includes="core/**" />
+      <zipfileset dir="." prefix="ESPMode" includes="examples/**" />
+      <zipfileset dir="." prefix="ESPMode" includes="keywords.txt" />
+      <zipfileset dir="." prefix="ESPMode" includes="libraries/**" />
+      <zipfileset dir="." prefix="ESPMode" includes="mode/**" />
+      <zipfileset dir="." prefix="ESPMode" includes="mode.properties" />
+      <zipfileset dir="." prefix="ESPMode" includes="template/**" />
     </zip>
     <copy file="mode.properties" tofile="${me}.txt" />
   </target>

@@ -226,6 +226,7 @@ public class ESPEditor extends Editor {
       // Make sure the sketch folder still exists, and the SketchCode objects
       // are updated to include any text changes from the Editor.
       prepareRun();
+      new ESPBuild(sketch, getMode().getFolder());
 //      // write the HTML here in case we need temp files
 //      p5jsBuild.updateHtml(sketch);
     } catch (Exception e) {
