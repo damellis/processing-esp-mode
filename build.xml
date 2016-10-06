@@ -96,7 +96,8 @@ ${line.separator}esp.dir=/path/to/esp-git" />
   <target name="examples">
     <delete dir="examples" />
     <copy todir="examples/ESP">
-      <fileset dir="${esp.dir}/Xcode/ESP/src/examples" />
+      <fileset dir="${esp.dir}/Xcode/ESP/src/examples" includes="*.cpp" />
+      <regexpmapper from="(.*).cpp" to="\1/\1.cpp" />
     </copy>
   </target>
 
