@@ -86,8 +86,8 @@ ${line.separator}esp.dir=/path/to/esp-git" />
   </target>
   
   <target name="install.data">
-    <copy todir="core/Resources">
-      <fileset file="${esp.dir}/Xcode/ESP/bin/data" />
+    <copy todir="core/Resources/data">
+      <fileset file="${esp.dir}/Xcode/ESP/bin/data/**" />
     </copy>
   </target>
   
