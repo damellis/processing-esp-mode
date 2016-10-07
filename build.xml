@@ -1,5 +1,23 @@
 <project name="esp-mode" default="install">
 
+  <!-- Sets properties for macosx/windows/linux depending on current system -->
+  <condition property="platform" value="macosx">
+    <os family="mac" />
+  </condition>
+
+  <condition property="platform" value="windows">
+    <os family="windows" />
+  </condition>
+
+  <condition property="platform" value="linux">
+    <and>
+      <os family="unix" />
+      <not>
+        <os family="mac" />
+      </not>
+    </and>
+  </condition>
+
   <property file="local.properties" />
 
   <condition property="props.present">
@@ -29,7 +47,18 @@ ${line.separator}esp.dir=/path/to/esp-git" />
             value="${me}.zip" />
   
   <property name="ofVersion" value="v0.9.3" />
-  <property name="ofFile" value="of_v0.9.3_osx_release" />
+  
+  <condition property="ofFile" value="of_${ofVersion}_osx_release">
+    <os family="mac" />
+  </condition>
+
+  <condition property="ofFile" value="">
+    <os family="unix" />
+  </condition>
+
+  <condition property="ofFile" value="of_${ofVersion}_vs_release">
+    <os family="windows" />
+  </condition>
   
   <condition property="ofZipFile.present">
     <available file="${ofFile}.zip" />
@@ -43,7 +72,7 @@ ${line.separator}esp.dir=/path/to/esp-git" />
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
   <target name="download.of" unless="ofZipFile.present">
-    <get src="http://openframeworks.cc/versions/${ofVersion}/${ofZipFile}"
+    <get src="http://openframeworks.cc/versions/${ofVersion}/${ofFile}.zip"
          dest="${ofFile}.zip" verbose="on" />
   </target>
 
@@ -52,9 +81,18 @@ ${line.separator}esp.dir=/path/to/esp-git" />
     <move file="core/library/${ofFile}" tofile="core/library/openFrameworks" />
   </target>
   
-  <target name="install.libs">
+  <target name="macosx-install.libs">
     <copy file="${esp.dir}/Xcode/ESP/bin/libesp.a" todir="core/library" />
     <copy file="${esp.dir}/Xcode/ESP/libgrt.dylib" todir="core/library" />
+  </target>
+
+  <target name="windows-install.libs">
+    <copy file="${esp.dir}/Xcode/ESP/bin/ESPlib_debug.lib" todir="core/library" />
+    <copy file="${esp.dir}/Xcode/ESP/grt.lib" todir="core/library" />
+  </target>
+
+  <target name="install.libs">
+    <antcall target="${platform}-install.libs" />
   </target>
   
   <target name="install.includes">
@@ -151,10 +189,6 @@ ${line.separator}esp.dir=/path/to/esp-git" />
 
     <copy todir="${install.dir}/examples">
       <fileset dir="examples" />
-    </copy>
-
-    <copy todir="${install.dir}/libraries">
-      <fileset dir="libraries" />
     </copy>
 
     <copy todir="${install.dir}/mode">
