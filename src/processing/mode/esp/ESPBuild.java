@@ -281,7 +281,9 @@ public class ESPBuild {
       Process process = Runtime.getRuntime().exec(command, null, coreFolder);
       new SystemOutSiphon(process.getInputStream());
       new SystemOutSiphon(process.getErrorStream());
-      System.out.println("Exited with: " + process.waitFor());
+      int result = process.waitFor();
+      System.out.println("Exited with: " + result);
+      if (result != 0) return;
     } catch (Exception e) {
       e.printStackTrace();
     }
