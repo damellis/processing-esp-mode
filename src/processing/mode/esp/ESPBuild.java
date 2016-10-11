@@ -70,7 +70,7 @@ public class ESPBuild {
     
       // Assemble .app contents.
       try {
-        Util.copyDir(new File(coreFolder, "Resources"), new File(contentsFolder, "Resources"));
+        Util.copyDir(new File(coreFolder, "data"), new File(new File(contentsFolder, "Resources"), "data"));
         Util.copyFile(new File(coreFolder, "Info.plist"), new File(contentsFolder, "Info.plist"));
         Util.copyFile(new File(coreLibraryFolder, "libgrt.dylib"), new File(frameworksFolder, "libgrt.dylib"));
         Util.copyFile(new File(coreLibraryFolder, "openFrameworks/libs/fmodex/lib/osx/libfmodex.dylib"), new File(binFolder, "libfmodex.dylib"));
@@ -151,7 +151,7 @@ public class ESPBuild {
 
       try {
 	    Util.copyDir(new File(coreFolder, "library\\openFrameworks\\export\\vs\\Win32"), binFolder);
-        Util.copyDir(new File(new File(coreFolder, "Resources"), "data"), new File(binFolder, "data"));
+        Util.copyDir(new File(coreFolder, "data"), new File(binFolder, "data"));
       } catch (IOException e) {
         e.printStackTrace();
         return;

@@ -14,7 +14,7 @@ of_*.zip
 # ESP and dependencies
 core/include/*
 core/library/*
-core/Resources/*
+core/data/*
 
 # the dist files
 ESPMode.zip

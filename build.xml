@@ -124,7 +124,7 @@ ${line.separator}esp.dir=/path/to/esp-git" />
   </target>
   
   <target name="install.data">
-    <copy todir="core/Resources/data">
+    <copy todir="core/data">
       <fileset file="${esp.dir}/Xcode/ESP/bin/data/**" />
     </copy>
   </target>
