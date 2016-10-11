@@ -146,25 +146,25 @@ public class ESPBuild {
     }
 
     if (Platform.isWindows()) {
-	  File objFolder = new File(outputFolder, "obj"); objFolder.mkdir();
-	  File binFolder = new File(outputFolder, "bin");
+      File objFolder = new File(outputFolder, "obj"); objFolder.mkdir();
+      File binFolder = new File(outputFolder, "bin");
 
       try {
-	    Util.copyDir(new File(coreFolder, "library\\openFrameworks\\export\\vs\\Win32"), binFolder);
+        Util.copyDir(new File(coreFolder, "library\\openFrameworks\\export\\vs\\Win32"), binFolder);
         Util.copyDir(new File(coreFolder, "data"), new File(binFolder, "data"));
       } catch (IOException e) {
         e.printStackTrace();
         return;
       }
 
-	  String[] windowsLibraryIncludes = {
-	    "openFrameworks/libs/glu/include",
-		"openFrameworks/libs/videoInput/include"
-	  };
+      String[] windowsLibraryIncludes = {
+        "openFrameworks/libs/glu/include",
+        "openFrameworks/libs/videoInput/include"
+      };
 
-	  String[] libs = {
-	    "openframeworksLib_debug.lib",
-	    "ESPlib_debug.lib",
+      String[] libs = {
+        "openframeworksLib_debug.lib",
+        "ESPlib_debug.lib",
         "grt.lib",
         "\"cairo-static.lib\"",
         "\"pixman-1.lib\"",
@@ -218,19 +218,19 @@ public class ESPBuild {
         "uuid.lib",
         "odbc32.lib",
         "odbccp32.lib",	  
-	  };
+      };
 
-	  String[] excludeLibraries = {
-		"PocoFoundationmdd.lib", 
-		"atlthunk.lib",
-		"msvcrt",
-		"libcmt",
-		"LIBC",
-		"LIBCMTD"
-	  };
+      String[] excludeLibraries = {
+        "PocoFoundationmdd.lib",
+        "atlthunk.lib",
+        "msvcrt",
+        "libcmt",
+        "LIBC",
+        "LIBCMTD"
+      };
 
-	  String[] libdirs = {
-	    "",
+      String[] libdirs = {
+        "",
         "openFrameworks/libs/glut/lib/vs/Win32",
         "openFrameworks/libs/glfw/lib/vs/Win32",
         "openFrameworks/libs/rtAudio/lib/vs/Win32",
@@ -246,34 +246,34 @@ public class ESPBuild {
         "openFrameworks/libs/Poco/lib/vs/Win32",
         "openFrameworks/libs/tess2/lib/vs/Win32",
         "openFrameworks/libs/boost/lib/vs/Win32",
-	  };
+      };
 
       String compileCommand = "cl.exe /c";
       for (String include : includes) compileCommand += " /Iinclude/" + include;
       for (String include : libraryIncludes) compileCommand += " /Ilibrary/" + include;
       for (String include : windowsLibraryIncludes) compileCommand += " /Ilibrary/" + include;
-	  compileCommand += " /Zi /W3 /WX- /MP /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D POCO_STATIC /D CAIRO_WIN32_STATIC_BUILD /D DISABLE_SOME_FLOATING_POINT /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo" + '"' + new File(objFolder, "user.obj").getAbsolutePath() + '"' + " /Fd" + '"' + new File(objFolder, "vc140.pdb").getAbsolutePath() + '"' + " /Gd /TP /analyze- /errorReport:prompt";
-	  compileCommand += " " + '"'+ sketch.getCode()[0].getFile().getAbsolutePath() + '"';
+      compileCommand += " /Zi /W3 /WX- /MP /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D POCO_STATIC /D CAIRO_WIN32_STATIC_BUILD /D DISABLE_SOME_FLOATING_POINT /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo" + '"' + new File(objFolder, "user.obj").getAbsolutePath() + '"' + " /Fd" + '"' + new File(objFolder, "vc140.pdb").getAbsolutePath() + '"' + " /Gd /TP /analyze- /errorReport:prompt";
+      compileCommand += " " + '"'+ sketch.getCode()[0].getFile().getAbsolutePath() + '"';
 
-	  String linkCommand = "link.exe /ERRORREPORT:PROMPT /OUT:" + '"' + new File(binFolder, "ESP_debug.exe").getAbsolutePath() + '"' + " /INCREMENTAL /NOLOGO ";
-	  for (String lib : libs) linkCommand += " " + lib;
-	  for (String libdir : libdirs) linkCommand += " /LIBPATH:library/" + libdir;
-	  for (String lib : excludeLibraries) linkCommand += " /NODEFAULTLIB:" + lib;
-	  linkCommand += " /MANIFEST /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\" /manifest:embed /DEBUG /PDB:" + '"' + new File(binFolder, "ESP_debug.pdb").getAbsolutePath() + '"' + 
-	  " /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /NXCOMPAT /IMPLIB:" + '"' + new File(binFolder, "ESP_debug.lib").getAbsolutePath() + '"' + " /MACHINE:X86 /SAFESEH /ignore:4099 " + '"' + new File(objFolder, "user.obj").getAbsolutePath() + '"'; //  obj\\Debug\\icon.res
+      String linkCommand = "link.exe /ERRORREPORT:PROMPT /OUT:" + '"' + new File(binFolder, "ESP_debug.exe").getAbsolutePath() + '"' + " /INCREMENTAL /NOLOGO ";
+      for (String lib : libs) linkCommand += " " + lib;
+      for (String libdir : libdirs) linkCommand += " /LIBPATH:library/" + libdir;
+      for (String lib : excludeLibraries) linkCommand += " /NODEFAULTLIB:" + lib;
+      linkCommand += " /MANIFEST /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\" /manifest:embed /DEBUG /PDB:" + '"' + new File(binFolder, "ESP_debug.pdb").getAbsolutePath() + '"' + 
+      " /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /NXCOMPAT /IMPLIB:" + '"' + new File(binFolder, "ESP_debug.lib").getAbsolutePath() + '"' + " /MACHINE:X86 /SAFESEH /ignore:4099 " + '"' + new File(objFolder, "user.obj").getAbsolutePath() + '"'; //  obj\\Debug\\icon.res
 
-	  try {
-  	    PrintWriter pw = new PrintWriter(new File(outputFolder, "compile.bat"));
-	    pw.println("CALL \"C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\vcvarsall.bat\"");
-	    pw.println(compileCommand);
-		pw.println(linkCommand);
-	    pw.close();
-	  } catch (FileNotFoundException e) {
-	    e.printStackTrace();
-		return;
-	  }
+      try {
+        PrintWriter pw = new PrintWriter(new File(outputFolder, "compile.bat"));
+        pw.println("CALL \"C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\vcvarsall.bat\"");
+        pw.println(compileCommand);
+        pw.println(linkCommand);
+        pw.close();
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+        return;
+      }
 
-	  command = "cmd /c " + '"' + new File(outputFolder, "compile.bat").getAbsolutePath() + '"';
+      command = "cmd /c " + '"' + new File(outputFolder, "compile.bat").getAbsolutePath() + '"';
     }
 
     System.out.println(command);
@@ -286,17 +286,17 @@ public class ESPBuild {
       e.printStackTrace();
     }
     try {
-	  String runCommand = "";
-	  File runFolder = null;
-	  if (Platform.isMacOS()) {
+      String runCommand = "";
+      File runFolder = null;
+      if (Platform.isMacOS()) {
         File appFolder = new File(outputFolder, "ESP.app");
-		runCommand = "open " + appFolder.getAbsolutePath();
-	  }
-	  if (Platform.isWindows()) {
-	    File binFolder = new File(outputFolder, "bin");
-	  	runCommand = new File(binFolder, "ESP_debug.exe").getAbsolutePath();
-		runFolder = binFolder;
-	  }
+        runCommand = "open " + appFolder.getAbsolutePath();
+      }
+      if (Platform.isWindows()) {
+        File binFolder = new File(outputFolder, "bin");
+        runCommand = new File(binFolder, "ESP_debug.exe").getAbsolutePath();
+        runFolder = binFolder;
+      }
       Process process = Runtime.getRuntime().exec(runCommand, null, runFolder);
       new SystemOutSiphon(process.getInputStream());
       new SystemOutSiphon(process.getErrorStream());
@@ -304,6 +304,5 @@ public class ESPBuild {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    
   }
 }
