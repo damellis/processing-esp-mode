@@ -16,6 +16,14 @@ public class ESPBuild {
     File coreFolder = new File(modeFolder, "core");
     File coreLibraryFolder = new File(coreFolder, "library");
     File outputFolder = sketch.makeTempFolder();
+    File codeFile = new File(outputFolder, sketch.getCode()[0].getFile().getName());
+    
+    try {
+      Util.saveFile(sketch.getCode()[0].getProgram(), codeFile);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    }
 
     String command = "";
 
@@ -143,7 +151,7 @@ public class ESPBuild {
       for (String dylib : dylibs) command += " -l" + dylib;
       for (String framework : frameworks) command += " -framework " + framework;
       for (String lib : libs) command += " library/" + lib;
-      command += " " + sketch.getCode()[0].getFile().getAbsolutePath() + " -o " + binFolder.getAbsolutePath() + "/ESP";
+      command += " " + codeFile.getAbsolutePath() + " -o " + binFolder.getAbsolutePath() + "/ESP";
     }
 
     if (Platform.isWindows()) {
@@ -254,7 +262,7 @@ public class ESPBuild {
       for (String include : libraryIncludes) compileCommand += " /Ilibrary/" + include;
       for (String include : windowsLibraryIncludes) compileCommand += " /Ilibrary/" + include;
       compileCommand += " /Zi /W3 /WX- /MP /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D POCO_STATIC /D CAIRO_WIN32_STATIC_BUILD /D DISABLE_SOME_FLOATING_POINT /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo" + '"' + new File(objFolder, "user.obj").getAbsolutePath() + '"' + " /Fd" + '"' + new File(objFolder, "vc140.pdb").getAbsolutePath() + '"' + " /Gd /TP /analyze- /errorReport:prompt";
-      compileCommand += " " + '"'+ sketch.getCode()[0].getFile().getAbsolutePath() + '"';
+      compileCommand += " " + '"'+ codeFile.getAbsolutePath() + '"';
 
       String linkCommand = "link.exe /ERRORREPORT:PROMPT /OUT:" + '"' + new File(binFolder, "ESP_debug.exe").getAbsolutePath() + '"' + " /INCREMENTAL /NOLOGO ";
       for (String lib : libs) linkCommand += " " + lib;
