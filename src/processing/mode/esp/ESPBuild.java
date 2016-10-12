@@ -265,6 +265,7 @@ public class ESPBuild {
       try {
         PrintWriter pw = new PrintWriter(new File(outputFolder, "compile.bat"));
         pw.println("CALL \"C:\\Program Files (x86)\\Microsoft Visual Studio 14.0\\VC\\vcvarsall.bat\"");
+        pw.println("COPY \"%UniversalCRTSdkDir%\\bin\\x86\\ucrt\\ucrtbased.dll\" " + '"' + outputFolder.getAbsolutePath() + "\\bin" + '"');
         pw.println(compileCommand);
         pw.println(linkCommand);
         pw.close();
