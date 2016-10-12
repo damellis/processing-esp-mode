@@ -279,34 +279,40 @@ public class ESPBuild {
     }
 
     System.out.println(command);
-    try {
-      Process process = Runtime.getRuntime().exec(command, null, coreFolder);
-      new SystemOutSiphon(process.getInputStream());
-      new SystemOutSiphon(process.getErrorStream());
-      int result = process.waitFor();
-      System.out.println("Exited with: " + result);
-      if (result != 0) return;
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    try {
-      String runCommand = "";
-      File runFolder = null;
-      if (Platform.isMacOS()) {
-        File appFolder = new File(outputFolder, "ESP.app");
-        runCommand = "open " + appFolder.getAbsolutePath();
+    final String cmd = command;
+    Thread t = new Thread() {
+      public void run() {
+        try {
+          Process process = Runtime.getRuntime().exec(cmd, null, coreFolder);
+          new SystemOutSiphon(process.getInputStream());
+          new SystemOutSiphon(process.getErrorStream());
+          int result = process.waitFor();
+          System.out.println("Exited with: " + result);
+          if (result != 0) return;
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        try {
+          String runCommand = "";
+          File runFolder = null;
+          if (Platform.isMacOS()) {
+            File appFolder = new File(outputFolder, "ESP.app");
+            runCommand = "open " + appFolder.getAbsolutePath();
+          }
+          if (Platform.isWindows()) {
+            File binFolder = new File(outputFolder, "bin");
+            runCommand = new File(binFolder, "ESP_debug.exe").getAbsolutePath();
+            runFolder = binFolder;
+          }
+          Process process = Runtime.getRuntime().exec(runCommand, null, runFolder);
+          new SystemOutSiphon(process.getInputStream());
+          new SystemOutSiphon(process.getErrorStream());
+          System.out.println("Exited with: " + process.waitFor());
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
-      if (Platform.isWindows()) {
-        File binFolder = new File(outputFolder, "bin");
-        runCommand = new File(binFolder, "ESP_debug.exe").getAbsolutePath();
-        runFolder = binFolder;
-      }
-      Process process = Runtime.getRuntime().exec(runCommand, null, runFolder);
-      new SystemOutSiphon(process.getInputStream());
-      new SystemOutSiphon(process.getErrorStream());
-      System.out.println("Exited with: " + process.waitFor());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    };
+    t.start();
   }
 }
