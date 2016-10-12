@@ -135,7 +135,8 @@ public class ESPBuild {
         "openFrameworks/libs/glut/lib/osx"
       };
     
-      command="g++ -std=c++11";
+      // Suppress warnings about OSAtomicIncrement32() and OSAtomicDecrement32() in poco/include/Poco/AtomicCounter.h
+      command="g++ -std=c++11 -Wno-deprecated-declarations";
       for (String include : includes) command += " -Iinclude/" + include;
       for (String include : libraryIncludes) command += " -Ilibrary/" + include;
       for (String libdir : libdirs) command += " -Llibrary/" + libdir;
