@@ -87,6 +87,7 @@ ${line.separator}esp.dir=/path/to/esp-git" />
   </target>
 
   <target name="windows-install.libs">
+    <copy file="${esp.dir}/third-party/openFrameworks/libs/openFrameworksCompiled/lib/vs/Win32/openframeworksLib_debug.lib" todir="core/library" />
     <copy file="${esp.dir}/Xcode/ESP/bin/ESPlib_debug.lib" todir="core/library" />
     <copy file="${esp.dir}/Xcode/ESP/grt.lib" todir="core/library" />
   </target>
