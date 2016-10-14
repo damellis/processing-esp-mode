@@ -17,7 +17,7 @@ public class ESPBuild {
     File coreLibraryFolder = new File(coreFolder, "library");
     File outputFolder = sketch.makeTempFolder();
     File codeFile = new File(outputFolder, sketch.getCode()[0].getFile().getName());
-    
+
     try {
       Util.saveFile(sketch.getCode()[0].getProgram(), codeFile);
     } catch (IOException e) {
@@ -75,7 +75,7 @@ public class ESPBuild {
       File contentsFolder = new File(appFolder, "Contents"); contentsFolder.mkdir();
       File frameworksFolder = new File(contentsFolder, "Frameworks"); frameworksFolder.mkdir();
       File binFolder = new File(contentsFolder, "MacOS"); binFolder.mkdir();
-    
+
       // Assemble .app contents.
       try {
         Util.copyDir(new File(coreFolder, "data"), new File(new File(contentsFolder, "Resources"), "data"));
@@ -142,7 +142,7 @@ public class ESPBuild {
         "openFrameworks/libs/fmodex/lib/osx",
         "openFrameworks/libs/glut/lib/osx"
       };
-    
+
       // Suppress warnings about OSAtomicIncrement32() and OSAtomicDecrement32() in poco/include/Poco/AtomicCounter.h
       command="g++ -std=c++11 -Wno-deprecated-declarations";
       for (String include : includes) command += " -Iinclude/" + include;
@@ -152,6 +152,113 @@ public class ESPBuild {
       for (String framework : frameworks) command += " -framework " + framework;
       for (String lib : libs) command += " library/" + lib;
       command += " " + codeFile.getAbsolutePath() + " -o " + binFolder.getAbsolutePath() + "/ESP";
+    }
+
+    if (Platform.isLinux()) {
+      try {
+        Util.copyDir(new File(coreFolder, "data"), new File(outputFolder, "data"));
+        Util.copyFile(new File(coreLibraryFolder, "libgrt.so"), new File(outputFolder, "libgrt.so"));
+      } catch (IOException e) {
+        e.printStackTrace();
+        return;
+      }
+
+      String[] libs = {
+        //"libesp.a",
+        "libopenFrameworksDebug.a",
+        "openFrameworks/libs/glfw/lib/linux64/libglfw3.a",
+        "openFrameworks/libs/poco/lib/linux64/libPocoCrypto.a",
+        "openFrameworks/libs/poco/lib/linux64/libPocoData.a",
+        "openFrameworks/libs/poco/lib/linux64/libPocoFoundation.a",
+        "openFrameworks/libs/poco/lib/linux64/libPocoJSON.a",
+        "openFrameworks/libs/poco/lib/linux64/libPocoNet.a",
+        "openFrameworks/libs/poco/lib/linux64/libPocoNetSSL.a",
+        "openFrameworks/libs/poco/lib/linux64/libPocoUtil.a",
+        "openFrameworks/libs/poco/lib/linux64/libPocoXML.a",
+        "openFrameworks/libs/poco/lib/linux64/libPocoZip.a",
+        "openFrameworks/libs/kiss/lib/linux64/libkiss.a",
+        "openFrameworks/libs/tess2/lib/linux64/libtess2.a",
+        "openFrameworks/libs/tess2/lib/linux64/libtess2.a",
+        "openFrameworks/libs/kiss/lib/linux64/libkiss.a",
+      };
+
+      String[] dylibs = {
+        "cairo",
+        "freeimage",
+        "freetype",
+        "GLEW",
+        "glib-2.0",
+        "gstapp-1.0",
+        "gstbase-1.0",
+        "gstreamer-1.0",
+        "gstvideo-1.0",
+        "crypto",
+        "ssl",
+        "rtaudio",
+        "fontconfig",
+        "gobject-2.0",
+        "gmodule-2.0",
+        "gthread-2.0",
+        "openal",
+        "pthread",
+        "atk-1.0",
+        "gio-2.0",
+        "gdk_pixbuf-2.0",
+        "cairo",
+        "freeimage",
+        "freetype",
+        "GLEW",
+        "glib-2.0",
+        "gstapp-1.0",
+        "gstbase-1.0",
+        "gstreamer-1.0",
+        "gstvideo-1.0",
+        "crypto",
+        "ssl",
+        "rtaudio",
+        "fontconfig",
+        "gobject-2.0",
+        "gmodule-2.0",
+        "gthread-2.0",
+        "openal",
+        "pthread",
+        "atk-1.0",
+        "gio-2.0",
+        "gdk_pixbuf-2.0",
+        "pango-1.0",
+        "pangocairo-1.0",
+        "pangoft2-1.0",
+        "pangoxft-1.0",
+        "gdk-x11-2.0",
+        "gtk-x11-2.0",
+        "X11",
+        "GL",
+        "GLU",
+        "glut",
+        "Xxf86vm",
+        "Xrandr",
+        "Xi",
+        "Xcursor",
+        "sndfile",
+        "grt",
+        "boost_filesystem",
+        "boost_system",
+        "PocoCrypto",
+        "PocoData",
+        "PocoFoundation",
+        "PocoJSON",
+        "PocoNet",
+        "PocoUtil",
+        "PocoXML",
+        "PocoZip",
+      };
+      command = "g++ -std=gnu++11 -Wno-deprecated-declarations -Llibrary -Llibrary/openFrameworks/libs/poco/lib/linux64 -lesp"; //  -Wl,-rpath,.";
+      for (String include : includes) command += " -Iinclude/" + include;
+      for (String include : libraryIncludes) command += " -Ilibrary/" + include;
+      command += " -Ilibrary/openFrameworks/libs/kiss/include -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/gstreamer-1.0 -I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include -I/home/mellis/ESP/third-party/grt";
+      for (String lib : libs) command += " library/" + lib;
+      for (String lib : dylibs) command += " -l" + lib;
+      command += " " + codeFile.getAbsolutePath() + " -o " + outputFolder.getAbsolutePath() + "/ESP";
     }
 
     if (Platform.isWindows()) {
@@ -226,7 +333,7 @@ public class ESPBuild {
         "oleaut32.lib",
         "uuid.lib",
         "odbc32.lib",
-        "odbccp32.lib",	  
+        "odbccp32.lib",
       };
 
       String[] excludeLibraries = {
@@ -268,7 +375,7 @@ public class ESPBuild {
       for (String lib : libs) linkCommand += " " + lib;
       for (String libdir : libdirs) linkCommand += " /LIBPATH:library/" + libdir;
       for (String lib : excludeLibraries) linkCommand += " /NODEFAULTLIB:" + lib;
-      linkCommand += " /MANIFEST /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\" /manifest:embed /DEBUG /PDB:" + '"' + new File(binFolder, "ESP_debug.pdb").getAbsolutePath() + '"' + 
+      linkCommand += " /MANIFEST /MANIFESTUAC:\"level='asInvoker' uiAccess='false'\" /manifest:embed /DEBUG /PDB:" + '"' + new File(binFolder, "ESP_debug.pdb").getAbsolutePath() + '"' +
       " /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /NXCOMPAT /IMPLIB:" + '"' + new File(binFolder, "ESP_debug.lib").getAbsolutePath() + '"' + " /MACHINE:X86 /SAFESEH /ignore:4099 " + '"' + new File(objFolder, "user.obj").getAbsolutePath() + '"'; //  obj\\Debug\\icon.res
 
       try {
@@ -306,6 +413,10 @@ public class ESPBuild {
           if (Platform.isMacOS()) {
             File appFolder = new File(outputFolder, "ESP.app");
             runCommand = "open " + appFolder.getAbsolutePath();
+          }
+          if (Platform.isLinux()) {
+            runCommand = new File(outputFolder, "ESP").getAbsolutePath();
+            runFolder = outputFolder;
           }
           if (Platform.isWindows()) {
             File binFolder = new File(outputFolder, "bin");

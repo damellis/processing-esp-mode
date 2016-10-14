@@ -52,35 +52,52 @@ ${line.separator}esp.dir=/path/to/esp-git" />
     <os family="mac" />
   </condition>
 
-  <condition property="ofFile" value="">
-    <os family="unix" />
-  </condition>
-
   <condition property="ofFile" value="of_${ofVersion}_vs_release">
     <os family="windows" />
   </condition>
   
+  <condition property="ofFile" value="of_${ofVersion}_linux64_release">
+    <os family="unix" />
+  </condition>
+
+  <condition property="ofZipFile" value="${ofFile}.tar.gz" else="${ofFile}.zip">
+    <os family="unix" />
+  </condition>
+
   <condition property="ofZipFile.present">
-    <available file="${ofFile}.zip" />
+    <available file="${ofZipFile}" />
   </condition>
 
   <condition property="of.present">
     <available file="core/library/openFrameworks" />
   </condition>
 
-
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-
   <target name="download.of" unless="ofZipFile.present">
-    <get src="http://openframeworks.cc/versions/${ofVersion}/${ofFile}.zip"
-         dest="${ofFile}.zip" verbose="on" />
+    <get src="http://openframeworks.cc/versions/${ofVersion}/${ofZipFile}"
+         dest="${ofZipFile}" verbose="on" />
   </target>
 
-  <target name="install.of" depends="download.of" unless="of.present">
-    <unzip src="${ofFile}.zip" dest="core/library" />
+  <target name="macosx-install.of">
+    <unzip src="${ofZipFile}" dest="core/library" />
     <move file="core/library/${ofFile}" tofile="core/library/openFrameworks" />
   </target>
   
+  <target name="windows-install.of">
+    <unzip src="${ofZipFile}" dest="core/library" />
+    <move file="core/library/${ofFile}" tofile="core/library/openFrameworks" />
+  </target>
+
+  <target name="linux-install.of">
+    <untar src="${ofZipFile}" dest="core/library" compression="gzip" />
+    <move file="core/library/${ofFile}" tofile="core/library/openFrameworks" />
+  </target>  
+  
+  <target name="install.of" depends="download.of" unless="of.present">
+    <antcall target="${platform}-install.of" />
+  </target>
+  
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
   <target name="macosx-install.libs">
     <copy file="${esp.dir}/Xcode/ESP/bin/libesp.a" todir="core/library" />
     <copy file="${esp.dir}/Xcode/ESP/libgrt.dylib" todir="core/library" />
@@ -90,6 +107,12 @@ ${line.separator}esp.dir=/path/to/esp-git" />
     <copy file="${esp.dir}/third-party/openFrameworks/libs/openFrameworksCompiled/lib/vs/Win32/openframeworksLib_debug.lib" todir="core/library" />
     <copy file="${esp.dir}/Xcode/ESP/bin/ESPlib_debug.lib" todir="core/library" />
     <copy file="${esp.dir}/Xcode/ESP/grt.lib" todir="core/library" />
+  </target>
+
+  <target name="linux-install.libs">
+    <copy file="${esp.dir}/third-party/grt/build/tmp/libgrt.so" todir="core/library" />
+    <copy file="${esp.dir}/build/libesp.a" todir="core/library" />
+    <copy file="${esp.dir}/third-party/openFrameworks/libs/openFrameworksCompiled/lib/linux64/libopenFrameworksDebug.a" todir="core/library" />
   </target>
 
   <target name="install.libs">
