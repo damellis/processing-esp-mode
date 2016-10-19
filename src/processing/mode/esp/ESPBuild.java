@@ -252,13 +252,15 @@ public class ESPBuild {
         "PocoXML",
         "PocoZip",
       };
-      command = "g++ -std=gnu++11 -Wno-deprecated-declarations -Llibrary -Llibrary/openFrameworks/libs/poco/lib/linux64 -lesp"; //  -Wl,-rpath,.";
+      command = "g++ -std=gnu++11 -Wno-deprecated-declarations";
+      command += " " + codeFile.getAbsolutePath();
+      command += " -Llibrary -Llibrary/openFrameworks/libs/poco/lib/linux64 -lesp";
       for (String include : includes) command += " -Iinclude/" + include;
       for (String include : libraryIncludes) command += " -Ilibrary/" + include;
       command += " -Ilibrary/openFrameworks/libs/kiss/include -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/gstreamer-1.0 -I/usr/lib/x86_64-linux-gnu/gstreamer-1.0/include -I/home/mellis/ESP/third-party/grt";
       for (String lib : libs) command += " library/" + lib;
       for (String lib : dylibs) command += " -l" + lib;
-      command += " " + codeFile.getAbsolutePath() + " -o " + outputFolder.getAbsolutePath() + "/ESP";
+      command += " -Wl,-rpath,. -o " + outputFolder.getAbsolutePath() + "/ESP";
     }
 
     if (Platform.isWindows()) {
